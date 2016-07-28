@@ -118,6 +118,6 @@ if __name__ == '__main__':
     account_id = kb.create_account('someone', str(uuid.uuid1()))
     valid_cc_id = kb.create_payment_method(account_id, 'true', '__EXTERNAL_PAYMENT__', '1234123412341234', '123', '07', '2020')
 
-    checkout(account_id, 'Standard', 'MONTHLY', 'DEFAULT', valid_cc_id)
+    # checkout(account_id, 'Standard', 'MONTHLY', 'DEFAULT', valid_cc_id)
     checkout(account_id, 'Sports', 'MONTHLY', 'DEFAULT', str(uuid.uuid1()))  # Payment will fail because payment method doesn't exits
     checkout(account_id, 'Super', 'MONTHLY', 'DEFAULT', valid_cc_id)
