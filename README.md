@@ -1,5 +1,10 @@
 # kb_test
 
+## Requirements
+- Python 2.7.10
+- Requests: `pip install requests`
+
+## Running the test
 1) Download killbill jetty console
 ```
 $ wget https://repo1.maven.org/maven2/org/kill-bill/billing/killbill-profiles-killbill/0.16.7/killbill-profiles-killbill-0.16.7-jetty-console.war
@@ -7,12 +12,12 @@ $ wget https://repo1.maven.org/maven2/org/kill-bill/billing/killbill-profiles-ki
 
 2) Start killbill (use defaults)
 ```
-java -jar killbill-profiles-killbill-0.16.7-jetty-console.war
+$ java -jar killbill-profiles-killbill-0.16.7-jetty-console.war
 ```
 
 3) Create tenant
 ```
-curl -v \
+$ curl -v \
      -X POST \
      -u admin:password \
      -H 'Content-Type: application/json' \
