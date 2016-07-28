@@ -98,8 +98,34 @@ if __name__ == '__main__':
     account_id = kb.create_account('Roberto', str(uuid.uuid1()))
     valid_cc_id = kb.create_payment_method(
         account_id, 'true', '__EXTERNAL_PAYMENT__', '1234123412341234', '123', '07', '2020')
+
+    '''
+    Looks like there is no way to create a second payment method when we use __EXTERNAL_PAYMENT__ as plugin so the test cannot be setup
+    correctly.
+    '''
     # invalid_cc_id = kb.create_payment_method(account_id, 'false', '__EXTERNAL_PAYMENT__', '1234123412341234', '123', '01', '2000')
 
     checkout(account_id, 'Standard', 'MONTHLY', 'DEFAULT', valid_cc_id)
-    checkout(account_id, 'Sports', 'MONTHLY', 'DEFAULT', valid_cc_id)
+
+    '''
+    The following call should use an invalid payment method or hack to make the payment to fail so we can reproduce this issue:
+
+    2016-07-27 20:43:30,751 [notifications-th] WARN  org.killbill.billing.payment.core.PluginControlPaymentProcessor [PluginControlPaymentProcessor.java:234]
+        - Failed to retry attemptId="3307f89e-489b-4afb-8c03-51091920be3b", paymentControlPlugins="__INVOICE_PAYMENT_CONTROL_PLUGIN__"
+        org.killbill.billing.payment.api.PaymentApiException: Control plugin aborted call: __INVOICE_PAYMENT_CONTROL_PLUGIN__
+    at org.killbill.billing.payment.core.sm.control.OperationControlCallback$1.doOperation(OperationControlCallback.java:107)
+    at org.killbill.billing.payment.core.sm.control.OperationControlCallback$1.doOperation(OperationControlCallback.java:84)
+    at org.killbill.billing.payment.core.ProcessorBase$WithAccountLock.processAccountWithLock(ProcessorBase.java:199)
+    at org.killbill.billing.payment.core.ProcessorBase$CallableWithAccountLock.call(ProcessorBase.java:182)
+    at org.killbill.billing.payment.core.ProcessorBase$CallableWithAccountLock.call(ProcessorBase.java:163)
+    at org.killbill.billing.payment.dispatcher.CallableWithRequestData.call(CallableWithRequestData.java:63)
+    at org.killbill.commons.concurrent.WrappedCallable.call(WrappedCallable.java:42)
+    at java.util.concurrent.FutureTask.run(FutureTask.java:266)
+    at org.killbill.commons.concurrent.WrappedRunnable.run(WrappedRunnable.java:40)
+    at java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1142)
+    at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
+    at java.lang.Thread.run(Thread.java:745)
+    '''
+    checkout(account_id, 'Sports', 'MONTHLY', 'DEFAULT', valid_cc_id)  # should use invalid_cc_id
+
     checkout(account_id, 'Super', 'MONTHLY', 'DEFAULT', valid_cc_id)
