@@ -53,7 +53,6 @@ def is_payment_success(invoice_payment_id, expected_amount):
                 all_success = True
 
                 for transaction in invoice_payment['transactions']:
-
                     if not (transaction['transactionType'] == 'PURCHASE' and transaction['status'] == 'SUCCESS'):
                         all_success = False
 
@@ -87,28 +86,9 @@ def checkout(account, product_name, billing_period, price_list, payment_method):
 
 
 if __name__ == '__main__':
-    print ''
-    print 'Running test'
-    print ''
-
-    setup_logger()
-
-    kb = kb_client('127.0.0.1:8080', 'admin', 'password', 'bob', 'lazar')
-
-    account_id = kb.create_account('Roberto', str(uuid.uuid1()))
-    valid_cc_id = kb.create_payment_method(
-        account_id, 'true', '__EXTERNAL_PAYMENT__', '1234123412341234', '123', '07', '2020')
 
     '''
-    Looks like there is no way to create a second payment method when we use __EXTERNAL_PAYMENT__ as plugin so the test cannot be setup
-    correctly.
-    '''
-    # invalid_cc_id = kb.create_payment_method(account_id, 'false', '__EXTERNAL_PAYMENT__', '1234123412341234', '123', '01', '2000')
-
-    checkout(account_id, 'Standard', 'MONTHLY', 'DEFAULT', valid_cc_id)
-
-    '''
-    The following call should use an invalid payment method or hack to make the payment to fail so we can reproduce this issue:
+    The following code creates the following exception to be thrown in KB 0.16.7:
 
     2016-07-27 20:43:30,751 [notifications-th] WARN  org.killbill.billing.payment.core.PluginControlPaymentProcessor [PluginControlPaymentProcessor.java:234]
         - Failed to retry attemptId="3307f89e-489b-4afb-8c03-51091920be3b", paymentControlPlugins="__INVOICE_PAYMENT_CONTROL_PLUGIN__"
@@ -126,6 +106,18 @@ if __name__ == '__main__':
     at java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:617)
     at java.lang.Thread.run(Thread.java:745)
     '''
-    checkout(account_id, 'Sports', 'MONTHLY', 'DEFAULT', valid_cc_id)  # should use invalid_cc_id
 
+    print ''
+    print 'Running test'
+    print ''
+
+    setup_logger()
+
+    kb = kb_client('127.0.0.1:8080', 'admin', 'password', 'bob', 'lazar')
+
+    account_id = kb.create_account('someone', str(uuid.uuid1()))
+    valid_cc_id = kb.create_payment_method(account_id, 'true', '__EXTERNAL_PAYMENT__', '1234123412341234', '123', '07', '2020')
+
+    checkout(account_id, 'Standard', 'MONTHLY', 'DEFAULT', valid_cc_id)
+    checkout(account_id, 'Sports', 'MONTHLY', 'DEFAULT', str(uuid.uuid1()))  # Payment will fail because payment method doesn't exits
     checkout(account_id, 'Super', 'MONTHLY', 'DEFAULT', valid_cc_id)
