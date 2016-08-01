@@ -96,17 +96,15 @@ def checkout(account, product_name, billing_period, price_list, payment_method):
             kb.cancel_subscription(subsciption_id)
             kb.write_off_invoice(invoice_id)
         else:
-            logging.error('Payment did not go well')
+            logging.info('Payment for invoice %s OK!', invoice['invoiceId'])
     else:
-        logging.error(
-            'Invoice amount is expected to be greater than zero, double check subscription phase')
+        logging.info('Sounds like subscription was started as TRIAL')
 
     kb.remove_auto_pay_off_tag(account_id)
     logging.info('#################### ENDING CHECKOUT PROCESS ####\n\n')
 
 
 if __name__ == '__main__':
-
     '''
     The following code creates the following exception to be thrown in KB 0.16.7:
 
