@@ -144,5 +144,5 @@ if __name__ == '__main__':
 
         # checkout(account_id, 'Standard', 'MONTHLY', 'DEFAULT', valid_cc_id)
         # Payment will fail because payment method doesn't exits
-        checkout(account_id, 'Sports', 'MONTHLY', 'DEFAULT', str(uuid.uuid1()))
-        checkout(account_id, 'Super', 'MONTHLY', 'DEFAULT', valid_cc_id)
+        checkout(account_id, 'Sports', 'EVERGREEN', 'MONTHLY', 'DEFAULT', str(uuid.uuid1()))
+        checkout(account_id, 'Super', 'EVERGREEN', 'MONTHLY', 'DEFAULT', valid_cc_id)
