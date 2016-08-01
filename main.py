@@ -87,9 +87,19 @@ def checkout(account, product_name, billing_period, price_list, payment_method):
         invoice_payment_id = kb.create_invoice_payment(
             account, invoice_id, invoice['amount'], payment_method)
 
+        logging.info('\nVerifying payment for:\n account id=%s\n invoice id=%s\n subscription id=%s\n plan name=%s\n item type=%s\n description=%s\n ' +
+                     'amount=%s\n phase name=%s\n',
+                     invoice['items'][0]['accountId'], invoice['items'][0]['invoiceId'], invoice['items'][0]['subscriptionId'], invoice['items'][0]['planName'],
+                     invoice['items'][0]['itemType'], invoice['items'][0]['description'], invoice['items'][0]['amount'], invoice['items'][0]['phaseName'])
+
         if not is_payment_success(invoice_payment_id, invoice['amount']):
             kb.cancel_subscription(subsciption_id)
             kb.write_off_invoice(invoice_id)
+        else:
+            logging.error('Payment did not go well')
+    else:
+        logging.error(
+            'Invoice amount is expected to be greater than zero, double check subscription phase')
 
     kb.remove_auto_pay_off_tag(account_id)
     logging.info('#################### ENDING CHECKOUT PROCESS ####\n\n')
@@ -131,8 +141,10 @@ if __name__ == '__main__':
 
     if tenant_id is not None:
         account_id = kb.create_account('someone', str(uuid.uuid1()))
-        valid_cc_id = kb.create_payment_method(account_id, 'true', '__EXTERNAL_PAYMENT__', '1234123412341234', '123', '07', '2020')
+        valid_cc_id = kb.create_payment_method(
+            account_id, 'true', '__EXTERNAL_PAYMENT__', '1234123412341234', '123', '07', '2020')
 
         # checkout(account_id, 'Standard', 'MONTHLY', 'DEFAULT', valid_cc_id)
-        checkout(account_id, 'Sports', 'MONTHLY', 'DEFAULT', str(uuid.uuid1()))  # Payment will fail because payment method doesn't exits
+        # Payment will fail because payment method doesn't exits
+        checkout(account_id, 'Sports', 'MONTHLY', 'DEFAULT', str(uuid.uuid1()))
         checkout(account_id, 'Super', 'MONTHLY', 'DEFAULT', valid_cc_id)
