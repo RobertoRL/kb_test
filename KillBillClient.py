@@ -164,3 +164,24 @@ class KillBillClient:
             logging.error('status code=%s, response text=%s', response.status_code, response.text)
 
         return False
+
+    def get_tenant(self, api_key):
+        response = self.httpClient.do_get('/tenants?apiKey=' + api_key)
+
+        if response.status_code == 200:
+            return json.loads(response.text)
+
+        return None
+
+    def create_tenant(self, api_key, api_secret):
+        payload = {'apiKey': api_key, 'apiSecret': api_secret}
+        response = self.httpClient.do_post('/tenants', json=payload)
+
+        if response.status_code == 201:
+            new_object_id = response.headers['Location'][-36:]
+            logging.info('Tenant created id=%s, api_key=%s, api_secret=%s', new_object_id, api_key, api_secret)
+            return new_object_id
+        else:
+            logging.error('status code=%s, response text=%s', response.status_code, response.text)
+
+        return None

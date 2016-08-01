@@ -1,8 +1,18 @@
 from KillBillClient import KillBillClient as kb_client
+from decimal import Decimal
 import time
 import uuid
 import logging
 import json
+
+
+def setup_tenant(api_key, api_secret):
+    tenant_id = kb.get_tenant(api_key)
+
+    if tenant_id is None:
+        tenant_id = kb.create_tenant(api_key, api_secret)
+
+    return tenant_id is None
 
 
 def setup_logger():
@@ -72,7 +82,7 @@ def checkout(account, product_name, billing_period, price_list, payment_method):
 
     invoice = find_invoice_by_subscription_id(subsciption_id)
 
-    if invoice:
+    if invoice and Decimal(invoice['amount']) > 0:
         invoice_id = invoice['invoiceId']
         invoice_payment_id = kb.create_invoice_payment(
             account, invoice_id, invoice['amount'], payment_method)
@@ -82,7 +92,7 @@ def checkout(account, product_name, billing_period, price_list, payment_method):
             kb.write_off_invoice(invoice_id)
 
     kb.remove_auto_pay_off_tag(account_id)
-    logging.info('##### ENDING CHECKOUT PROCESS ####\n\n')
+    logging.info('#################### ENDING CHECKOUT PROCESS ####\n\n')
 
 
 if __name__ == '__main__':
@@ -113,11 +123,16 @@ if __name__ == '__main__':
 
     setup_logger()
 
-    kb = kb_client('127.0.0.1:8080', 'admin', 'password', 'bob', 'lazar')
+    api_key = 'bob'
+    api_secret = 'lazar'
 
-    account_id = kb.create_account('someone', str(uuid.uuid1()))
-    valid_cc_id = kb.create_payment_method(account_id, 'true', '__EXTERNAL_PAYMENT__', '1234123412341234', '123', '07', '2020')
+    kb = kb_client('127.0.0.1:8080', 'admin', 'password', api_key, api_secret)
+    tenant_id = setup_tenant(api_key, api_secret)
 
-    # checkout(account_id, 'Standard', 'MONTHLY', 'DEFAULT', valid_cc_id)
-    checkout(account_id, 'Sports', 'MONTHLY', 'DEFAULT', str(uuid.uuid1()))  # Payment will fail because payment method doesn't exits
-    checkout(account_id, 'Super', 'MONTHLY', 'DEFAULT', valid_cc_id)
+    if tenant_id is not None:
+        account_id = kb.create_account('someone', str(uuid.uuid1()))
+        valid_cc_id = kb.create_payment_method(account_id, 'true', '__EXTERNAL_PAYMENT__', '1234123412341234', '123', '07', '2020')
+
+        # checkout(account_id, 'Standard', 'MONTHLY', 'DEFAULT', valid_cc_id)
+        checkout(account_id, 'Sports', 'MONTHLY', 'DEFAULT', str(uuid.uuid1()))  # Payment will fail because payment method doesn't exits
+        checkout(account_id, 'Super', 'MONTHLY', 'DEFAULT', valid_cc_id)
