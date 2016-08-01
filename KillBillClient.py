@@ -119,7 +119,7 @@ class KillBillClient:
             logging.info('Payment id=%s with payment method id=%s for invoice id=%s has been created', new_object_id, payment_method, invoice_id)
             return new_object_id
         else:
-            logging.error('status code=%s, response text=%s, headers=%s', response.status_code, response.text, response.headers)
+            logging.error('status code=%s, response text=%s', response.status_code, response.text)
 
         return None
 
