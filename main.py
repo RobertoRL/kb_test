@@ -78,8 +78,8 @@ def checkout(account, product_name, billing_period, price_list, payment_method):
             account, invoice_id, invoice['amount'], payment_method)
 
         if not is_payment_success(invoice_payment_id, invoice['amount']):
-            kb.write_off_invoice(invoice_id)
             kb.cancel_subscription(subsciption_id)
+            kb.write_off_invoice(invoice_id)
 
     kb.remove_auto_pay_off_tag(account_id)
     logging.info('##### ENDING CHECKOUT PROCESS ####\n\n')
