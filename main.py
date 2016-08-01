@@ -71,12 +71,12 @@ def is_payment_success(invoice_payment_id, expected_amount):
     return False
 
 
-def checkout(account, product_name, billing_period, price_list, payment_method):
+def checkout(account, product_name, phase_type, billing_period, price_list, payment_method):
     logging.info('\n\n\n##### STARTING CHECKOUT PROCESS ####\n\n')
     kb.create_auto_invoicing_off_tag(account_id)
     kb.create_auto_pay_off_tag(account_id)
 
-    subsciption_id = kb.create_subscription(account_id, product_name, billing_period, price_list)
+    subsciption_id = kb.create_subscription(account_id, product_name, billing_period, price_list, phase_type)
 
     kb.remove_auto_invoicing_off_tag(account_id)
 

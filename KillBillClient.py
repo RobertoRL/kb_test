@@ -86,8 +86,8 @@ class KillBillClient:
 
         return False
 
-    def create_subscription(self, account_id, product_name, billing_period, price_list):
-        payload = self.payloads.get_create_subscription_payload(account_id, product_name, billing_period, price_list)
+    def create_subscription(self, account_id, product_name, billing_period, price_list, phase_type):
+        payload = self.payloads.get_create_subscription_payload(account_id, product_name, billing_period, price_list, phase_type)
         response = self.httpClient.do_post('/subscriptions', payload)
 
         if response.status_code == 201:
@@ -119,7 +119,7 @@ class KillBillClient:
             logging.info('Payment id=%s with payment method id=%s for invoice id=%s has been created', new_object_id, payment_method, invoice_id)
             return new_object_id
         else:
-            logging.error('status code=%s, response text=%s', response.status_code, response.text)
+            logging.error('status code=%s, response text=%s, headers=%s', response.status_code, response.text, response.headers)
 
         return None
 

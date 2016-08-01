@@ -14,14 +14,14 @@ class KillBillRequestPayloads:
 
         return payload
 
-    def get_create_subscription_payload(self, account, product_name, billing_period, price_list):
+    def get_create_subscription_payload(self, account, product_name, billing_period, price_list, phase_type):
         payload = {
             'accountId': account,
             'productName': product_name,
             'productCategory': 'BASE',
             'billingPeriod': billing_period,
             'priceList': price_list,
-            'phaseType': 'EVERGREEN'
+            'phaseType': phase_type
         }
 
         return payload
