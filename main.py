@@ -32,7 +32,7 @@ def setup_logger():
     logger.addHandler(ch)
 
 
-def find_invoice_by_subscription_id(subsciption_id):
+def find_invoice_by_subscription_id(subscription_id):
     attempt = 1
 
     while (attempt <= 20):
@@ -40,9 +40,9 @@ def find_invoice_by_subscription_id(subsciption_id):
 
         for invoice in invoices:
             for item in invoice['items']:
-                if item['subscriptionId'] == subsciption_id:
+                if item['subscriptionId'] == subscription_id:
                     logging.info('Subscription with id=%s has been found in invoice with id=%s\n\n%s\n',
-                                 subsciption_id, invoice['invoiceId'], json.dumps(invoice))
+                                 subscription_id, invoice['invoiceId'], json.dumps(invoice))
                     return invoice
 
         time.sleep(0.5)
